@@ -6,7 +6,8 @@ import json
 import jwt
 import requests
 import dotenv
-import constants
+from core import constants
+
 from pprint import pprint
 
 dotenv.load_dotenv()
@@ -43,7 +44,7 @@ def get_public_key_by_realm(realm):
 
 
 def get_authorization_token(realm_name, username, password):
-    realm_client_secret = os.getenv(realm_name + "_CLIENT_SECRET")
+    realm_client_secret = get_env_var(realm_name + "_CLIENT_SECRET")
     realm_details = constants.REALMS[realm_name]
     client_id = realm_details["CLIENT_ID"]
 
@@ -74,4 +75,7 @@ def get_authorization_token(realm_name, username, password):
             "error": error,
         }
     except Exception as error:
-        return error
+        return {
+            "message": f'Encountered Error',
+            "error": error,
+        }

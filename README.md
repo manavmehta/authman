@@ -1,3 +1,3 @@
-# Authman
+# Command to run the server
 
-Authentication and authorization service
+```uvicorn main:authman --reload```
