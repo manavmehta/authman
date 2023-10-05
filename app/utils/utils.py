@@ -7,14 +7,21 @@ import jwt
 import requests
 import dotenv
 from core import constants
-
-from pprint import pprint
+from db.connection import SessionLocal
 
 dotenv.load_dotenv()
 
 
 def get_env_var(key):
     return os.getenv(key)
+
+
+def get_db():
+    db = SessionLocal()
+    try:
+        yield db
+    finally:
+        db.close()
 
 
 """
@@ -26,8 +33,6 @@ def authenticate_user(username, password, realm_name):
     authentication_response = get_authorization_token(
         username=username, password=password, realm_name=realm_name
     )
-
-    pprint(authentication_response)
 
     return {
         "status": "SUCCESS" if "error" not in authentication_response else "FAILED",
@@ -74,8 +79,9 @@ def get_authorization_token(realm_name, username, password):
             "message": f'Encountered Key Error for the key "{error.args[0]}"',
             "error": error,
         }
+
     except Exception as error:
         return {
-            "message": f'Encountered Error',
+            "message": "Encountered Error",
             "error": error,
         }

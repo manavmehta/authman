@@ -1,6 +1,6 @@
 import datetime
-from sqlalchemy import Column, Integer, String, UUID, ForeignKey
 from typing import Optional
+from sqlalchemy import Column, Integer, String, UUID, ForeignKey
 
 from db.connection import Base
 

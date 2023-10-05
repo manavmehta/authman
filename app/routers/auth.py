@@ -15,4 +15,4 @@ async def authenticate(credentials: Credentials):
         username=credentials.username, password=credentials.password, realm_name="QMS"
     )
 
-    return (authentication_response)
+    return authentication_response
