@@ -1,8 +1,8 @@
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 CREATE TABLE team (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
-    parent_id UUID REFERENCES team(id) ON DELETE CASCADE,
+    id SERIAL PRIMARY KEY,
+    parent_id SERIAL REFERENCES team(id) ON DELETE CASCADE,
     name VARCHAR(100) NOT NULL,
     path TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
@@ -10,12 +10,12 @@ CREATE TABLE team (
 );
 
 CREATE TABLE users (
-    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
     email VARCHAR(100) NOT NULL,
     contact_num BIGINT NOT NULL,
-    supervisor_id UUID REFERENCES users(id),
-    team_id UUID NOT NULL REFERENCES team(id),
+    supervisor_id SERIAL REFERENCES users(id),
+    team_id SERIAL NOT NULL REFERENCES team(id),
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now()
 );
