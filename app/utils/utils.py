@@ -92,10 +92,11 @@ def get_authorization_token(realm_name, username, password):
             "error": error,
         }
 
+
 async def get_organization_details_for_user(kotak_username: str, db: Session):
     query = select(Organization.path, Organization.name, UserOrgAccess.access_type)
     query = query.join(UserOrgAccess, UserOrgAccess.id == Organization.id)
     query = query.join(Users, Users.id == UserOrgAccess.user_id)
     query = query.where(Users.kotak_username == kotak_username)
 
-    return  db.execute(query).all()
+    return db.execute(query).all()

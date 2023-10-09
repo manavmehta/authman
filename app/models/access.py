@@ -5,20 +5,21 @@ from db.connection import Base
 
 
 class UserOrgAccess(Base):
-    __tablename__ = 'user_org_access'
+    __tablename__ = "user_org_access"
 
     id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    organization_id = Column(Integer, ForeignKey('organization.id'), nullable=False)
-    access_type = Column(Enum('R', 'W'), nullable=False)
+    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
+    organization_id = Column(Integer, ForeignKey("organization.id"), nullable=False)
+    access_type = Column(Enum("R", "W"), nullable=False)
 
     created_at: datetime.datetime = Column()
     updated_at: datetime.datetime = Column()
+
     class Config:
         orm_mode = True
 
 
-class UserOrgAccessResponseItem():
+class UserOrgAccessResponseItem:
     path: str
     name: str
     access_type: str
@@ -29,13 +30,10 @@ class UserOrgAccessResponseItem():
         self.access_type = access_type
 
     def __json__(self):
-        return {
-            "path": self.path,
-            "name": self.name,
-            "access_type": self.access_type
-        }
+        return {"path": self.path, "name": self.name, "access_type": self.access_type}
 
-class UserOrgAccessResponse():
+
+class UserOrgAccessResponse:
     access: list[UserOrgAccessResponseItem]
     kotak_username: str
 
@@ -44,7 +42,4 @@ class UserOrgAccessResponse():
         self.access = access
 
     def __json__(self):
-        return {
-            "kotak_username": self.kotak_username,
-            "access": self.access
-        }
+        return {"kotak_username": self.kotak_username, "access": self.access}

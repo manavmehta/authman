@@ -4,6 +4,7 @@ from sqlalchemy import Column, Integer, String, ForeignKey, Text
 # from pydantic import BaseModel
 from db.connection import Base
 
+
 class Organization(Base):
     __tablename__ = "organization"
 
