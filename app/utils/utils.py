@@ -8,6 +8,12 @@ import requests
 import dotenv
 from core import constants
 from db.connection import SessionLocal
+from sqlalchemy import select
+from models.organization import Organization
+from models.organization import Organization
+from models.users import Users
+from models.access import UserOrgAccess
+from sqlalchemy.orm import Session
 
 dotenv.load_dotenv()
 
@@ -85,3 +91,11 @@ def get_authorization_token(realm_name, username, password):
             "message": "Encountered Error",
             "error": error,
         }
+
+async def get_organization_details_for_user(kotak_username: str, db: Session):
+    query = select(Organization.path, Organization.name, UserOrgAccess.access_type)
+    query = query.join(UserOrgAccess, UserOrgAccess.id == Organization.id)
+    query = query.join(Users, Users.id == UserOrgAccess.user_id)
+    query = query.where(Users.kotak_username == kotak_username)
+
+    return  db.execute(query).all()

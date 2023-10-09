@@ -12,8 +12,9 @@ class Users(Base):
     name: str = Column(String(100), nullable=False)
     email: str = Column(String(100), unique=True, nullable=False)
     contact_num: int = Column(Integer, nullable=False)
+    kotak_username: str = Column(String, nullable=False)
     supervisor_id: Optional[UUID] = Column(UUID, ForeignKey("users.id"))
-    team_id: UUID = Column(UUID, ForeignKey("team.id"))
+    organization_id: UUID = Column(UUID, ForeignKey("organization.id"))
     created_at: datetime.datetime = Column()
     updated_at: datetime.datetime = Column()
 
