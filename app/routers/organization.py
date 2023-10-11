@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends
-from models.organization import Organization
 from sqlalchemy.orm import Session
+from models.organization import Organization
 from utils import utils
 
 organization_router = APIRouter()

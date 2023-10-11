@@ -1,22 +1,32 @@
 import datetime
 from typing import Optional
-from sqlalchemy import Column, Integer, String, UUID, ForeignKey
+from sqlalchemy import Column, Integer, String, ForeignKey
 
+from pydantic import BaseModel
 from db.connection import Base
 
 
 class Users(Base):
     __tablename__ = "users"
 
-    id: UUID = Column(UUID, primary_key=True)
+    id: int = Column(Integer, primary_key=True)
     name: str = Column(String(100), nullable=False)
     email: str = Column(String(100), unique=True, nullable=False)
     contact_num: int = Column(Integer, nullable=False)
     kotak_username: str = Column(String, nullable=False)
-    supervisor_id: Optional[UUID] = Column(UUID, ForeignKey("users.id"))
-    organization_id: UUID = Column(UUID, ForeignKey("organization.id"))
+    supervisor_id: Optional[int] = Column(Integer, ForeignKey("users.id"))
+    organization_id: int = Column(Integer, ForeignKey("organization.id"))
     created_at: datetime.datetime = Column()
     updated_at: datetime.datetime = Column()
 
     class Config:
         orm_mode = True
+
+
+class UserCreate(BaseModel):
+    name: str
+    email: str
+    contact_num: int
+    kotak_username: str
+    supervisor_id: int
+    organization_id: int

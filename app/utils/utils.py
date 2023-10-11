@@ -77,8 +77,12 @@ def get_authorization_token(realm_name, username, password):
 
         user_info = json.loads(user_token_response.text)
         user_access_token = user_info["access_token"]
-
-        return jwt.decode(user_access_token, key=realm_public_key, algorithms=["RS256"])
+        return jwt.decode(
+            user_access_token,
+            key=realm_public_key,
+            algorithms=["RS256"],
+            audience="account",
+        )
 
     except KeyError as error:
         return {

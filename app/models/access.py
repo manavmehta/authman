@@ -1,6 +1,7 @@
 import datetime
 from sqlalchemy import Column, Integer, ForeignKey, Enum
 
+from pydantic import BaseModel
 from db.connection import Base
 
 
@@ -17,6 +18,13 @@ class UserOrgAccess(Base):
 
     class Config:
         orm_mode = True
+
+
+class UserOrgAccessRequest(BaseModel):
+    access_token: str
+    token_type: str
+    session_state: str
+    scope: str
 
 
 class UserOrgAccessResponseItem:
