@@ -3,9 +3,7 @@
 """
 
 REALM_URL = "http://localhost:18080/auth/realms/{0}"
-EVALUATE_URL = (
-    "http://localhost:18080/auth/admin/realms/{0}/clients/{1}/authz/resource-server/policy/evaluate"
-)
+
 REALM_USER_TOKEN_URL = (
     "http://localhost:18080/auth/realms/{0}/protocol/openid-connect/token"
 )
@@ -23,3 +21,5 @@ REALMS = {
 }
 
 SQLALCHEMY_DATABASE_URL = "postgresql://postgres:postgres@localhost:5432/authman"
+KEYCLOAK_USERS_URL = "http://localhost:18080/auth/admin/realms/QMS/users"
+KEYCLOAK_AUTH_ADMIN = "http://localhost:18080/auth/realms/QMS/protocol/openid-connect/token"

@@ -12,8 +12,8 @@ CREATE TABLE organization (
 CREATE TABLE users (
     id SERIAL PRIMARY KEY,
     name VARCHAR(100) NOT NULL,
-    email VARCHAR(100) NOT NULL,
-    kotak_username VARCHAR(50),
+    email VARCHAR(100) NOT NULL UNIQUE,
+    kotak_username VARCHAR(50) NOT NULL UNIQUE,
     contact_num BIGINT NOT NULL,
     supervisor_id SERIAL REFERENCES users(id),
     organization_id SERIAL NOT NULL REFERENCES organization(id),
@@ -43,10 +43,10 @@ INSERT INTO organization (name, parent_id, path) VALUES ('Credit Risk', (SELECT 
 INSERT INTO organization (name, parent_id, path) VALUES ('Counterparty Risk', (SELECT id FROM organization WHERE name = 'Market Risk'), '/Kotak/Risk/MarketRisk/CounterpartyRisk');
 
 
-INSERT INTO users (name, email, contact_num, organization_id) VALUES ('Sougat', 'sougat@chakraborty.com', 1234567890, 1);
-INSERT INTO users (name, email, contact_num, organization_id) VALUES ('Mohit', 'mohit@beniwal.com', 9876543210, 2);
-INSERT INTO users (name, email, contact_num, organization_id) VALUES ('Manav', 'manav@mehta.com', 1111111111, 2);
-INSERT INTO users (name, email, contact_num, organization_id) VALUES ('Piyush', 'piyush@sharma.com', 2222222222, 3);
+INSERT INTO users (name, email, kotak_username, contact_num, organization_id) VALUES ('Sougat', 'sougat@chakraborty.com', 'sougat', 1234567890, 1);
+INSERT INTO users (name, email, kotak_username, contact_num, organization_id) VALUES ('Mohit', 'mohit@beniwal.com', 'mohit', 9876543210, 2);
+INSERT INTO users (name, email, kotak_username, contact_num, organization_id) VALUES ('Manav', 'manav@mehta.com', 'manav', 1111111111, 2);
+INSERT INTO users (name, email, kotak_username, contact_num, organization_id) VALUES ('Piyush', 'piyush@sharma.com', 'piyush', 2222222222, 3);
 
 
 INSERT INTO user_org_access(user_id, organization_id, access_type) VALUES ((SELECT id FROM users WHERE name = 'Sougat'), (SELECT id FROM organization WHERE name = 'Risk'), 'W');

@@ -16,8 +16,8 @@ class Users(Base):
     kotak_username: str = Column(String, nullable=False)
     supervisor_id: Optional[int] = Column(Integer, ForeignKey("users.id"))
     organization_id: int = Column(Integer, ForeignKey("organization.id"))
-    created_at: datetime.datetime = Column()
-    updated_at: datetime.datetime = Column()
+    created_at: datetime.datetime = Column(default=datetime.datetime.now())
+    updated_at: datetime.datetime = Column(default=datetime.datetime.now())
 
     class Config:
         orm_mode = True
