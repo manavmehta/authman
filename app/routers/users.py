@@ -25,7 +25,6 @@ async def register_user(user_details: UserCreate, db: Session = Depends(utils.ge
     )
 
     response = keycloak_utils.add_user_to_keycloak(new_user)
-    print("RESP:", response)
 
     # 201 was being returned from KC, figure out a better way to handle this
     if response["status_code"] >= 300:

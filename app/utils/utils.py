@@ -8,11 +8,10 @@ import requests
 import dotenv
 from core import constants
 from db.connection import SessionLocal
-from sqlalchemy import select
-from models.organization import Organization
 from models.organization import Organization
 from models.users import Users
 from models.access import UserOrgAccess
+from sqlalchemy import select
 from sqlalchemy.orm import Session
 
 dotenv.load_dotenv()
