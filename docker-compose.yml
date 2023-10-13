@@ -1,21 +1,110 @@
+# This is the deployment yaml for the auth service
+# There will be three services in this deployment
+# 1. keycloak-db database: Postgres database Used by Keycloak
+# 2. keycloak: The auth service
+# 3. auth-service-backend: The FastAPI application that will manage the auth data for org/team/access
+# 4. auth-service-backend-db: Postgres database used by the auth-service-backend (Not sure if this is needed separate from the keycloak-db)
+
 services:
-  authman_pg:
-    image: postgres:14
-    container_name: authman_pg
+  keycloak_postgres:
+    container_name: keycloak_postgres
+    image: postgres:${POSTGRES_VERSION}
     ports:
-      - "5432:5432"
+      - ${KEYCLOAK_POSTGRES_OUTBOUND_PORT}:5432
     environment:
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
-      POSTGRES_DB: authman
+      POSTGRES_DB: ${KEYCLOAK_POSTGRES_DB}
+      POSTGRES_USER: ${KEYCLOAK_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD}
     restart: on-failure
     healthcheck:
-      test:
-        [
-          "CMD-SHELL",
-          "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"
-        ]
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       interval: 10s
       timeout: 5s
       retries: 5
-    
+    volumes:
+      - keycloak_postgres_volume:/var/lib/postgresql/data
+
+  keycloak: # https://hub.docker.com/r/bitnami/keycloak
+    container_name: auth_keycloak
+    image: bitnami/keycloak:${KEYCLOAK_SERVER_VERSION}
+    volumes:
+      - keycloak-theme:/opt/bitnami/keycloak/themes/identity
+    ports:
+      - "18080:8080"
+    environment:
+      KEYCLOAK_HTTP_RELATIVE_PATH: /auth
+      KEYCLOAK_DATABASE_HOST: keycloak_postgres
+      KEYCLOAK_DATABASE_PASSWORD: ${KEYCLOAK_POSTGRES_PASSWORD}
+      KEYCLOAK_ADMIN_USER: ${KEYCLOAK_ADMIN_USER}
+      KEYCLOAK_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+    restart: on-failure
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/auth"]
+      interval: 30s
+      timeout: 15s
+      retries: 5
+      start_period: 30s
+    depends_on:
+      - keycloak_postgres
+
+  auth_service_postgres:
+    container_name: auth_service_postgres
+    image: postgres:${POSTGRES_VERSION}
+    ports:
+      - ${AUTHMAN_POSTGRES_OUTBOUND_PORT}:5432
+    environment:
+      POSTGRES_DB: ${AUTHMAN_POSTGRES_DB}
+      POSTGRES_USER: ${AUTHMAN_POSTGRES_USER}
+      POSTGRES_PASSWORD: ${AUTHMAN_POSTGRES_PASSWORD}
+    restart: on-failure
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    volumes:
+      - auth_service_postgres_volume:/var/lib/postgresql/data
+
+  pgadmin:
+    container_name: auth_pgadmin
+    image: dpage/pgadmin4
+    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    ports:
+      - 5050:80
+    volumes:
+      - ./pgadmin-data:/var/lib/pgadmin
+    depends_on:
+      - keycloak_postgres
+      - auth_service_postgres
+
+  auth_service_backend:
+    container_name: authman
+    build: .
+    restart: always
+    ports:
+      - 8000:8000
+    volumes:
+      - .:/app
+    environment:
+      - POSTGRES_HOST=auth_service_postgres
+      - KEYCLOAK_BASE_URL="keycloak:8080/auth"
+      - POSTGRES_PORT=5432
+      - QMS_CLIENT_SECRET=${QMS_CLIENT_SECRET}
+      - QMS_ADMIN_USERNAME=${QMS_ADMIN_USERNAME}
+      - QMS_ADMIN_PASSWORD=${QMS_ADMIN_PASSWORD}
+      - POSTGRES_DB=${AUTHMAN_POSTGRES_DB}
+      - POSTGRES_USERNAME=${AUTHMAN_POSTGRES_USER}
+      - POSTGRES_PASSWORD=${AUTHMAN_POSTGRES_PASSWORD}
+
+    depends_on:
+      - pgadmin
+
+    command: bash -c "cd app && uvicorn main:authman --host 0.0.0.0 --port 8000 --reload"
+
+volumes:
+  keycloak_postgres_volume:
+  auth_service_postgres_volume:
+  keycloak-theme:
