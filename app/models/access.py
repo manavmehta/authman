@@ -1,5 +1,6 @@
 import datetime
 from sqlalchemy import Column, Integer, ForeignKey, Enum
+from typing import List
 
 from pydantic import BaseModel
 from db.connection import Base
@@ -42,10 +43,10 @@ class UserOrgAccessResponseItem:
 
 
 class UserOrgAccessResponse:
-    access: list[UserOrgAccessResponseItem]
+    access: List[UserOrgAccessResponseItem]
     kotak_username: str
 
-    def __init__(self, kotak_username: str, access: list[UserOrgAccessResponseItem]):
+    def __init__(self, kotak_username: str, access: List[UserOrgAccessResponseItem]):
         self.kotak_username = kotak_username
         self.access = access
 
