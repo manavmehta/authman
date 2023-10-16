@@ -1,6 +1,6 @@
 import datetime
-from sqlalchemy import Column, Integer, ForeignKey, Enum
 from typing import List
+from sqlalchemy import Column, Integer, ForeignKey, Enum
 
 from pydantic import BaseModel
 from db.connection import Base

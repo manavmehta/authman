@@ -1,4 +1,5 @@
 from os import environ
+
 """
     constants for the middleware
 """
@@ -11,9 +12,8 @@ POSTGRES_USERNAME = environ.get("POSTGRES_USERNAME", "postgres")
 POSTGRES_PASSWORD = environ.get("POSTGRES_PASSWORD", "postgres")
 
 
-
 # Keycloak specific URLs
-REALM_URL =  f"{KEYCLOAK_BASE_URL}/realms/{0}"
+REALM_URL = f"{KEYCLOAK_BASE_URL}/realms/{0}"
 REALM_USER_TOKEN_URL = f"{KEYCLOAK_BASE_URL}/realms/{0}/protocol/openid-connect/token"
 BRUTE_FORCE_USERS_URL = f"{KEYCLOAK_BASE_URL}/admin/realms/{0}/ui-ext/brute-force-user"
 KEYCLOAK_USERS_URL = f"{KEYCLOAK_BASE_URL}/admin/realms/QMS/users"
