@@ -41,6 +41,7 @@ pydantic_core==2.10.1
 PyJWT==2.8.0
 pylint==2.17.6
 pymongo==4.4.1
+python-decouple==3.7
 python-dotenv==1.0.0
 python-jose==3.3.0
 python-keycloak==3.3.0

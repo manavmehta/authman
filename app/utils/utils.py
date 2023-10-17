@@ -13,8 +13,11 @@ from models.users import Users
 from models.access import UserOrgAccess
 from sqlalchemy import select
 from sqlalchemy.orm import Session
+from fastapi.security import OAuth2PasswordBearer
 
 dotenv.load_dotenv()
+
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl="token")
 
 
 def get_env_var(key):
@@ -27,11 +30,6 @@ def get_db():
         yield db
     finally:
         db.close()
-
-
-"""
-    The below functions are being used for authentication purposes
-"""
 
 
 def authenticate_user(username, password, realm_name):

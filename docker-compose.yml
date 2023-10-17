@@ -90,7 +90,7 @@ services:
       - .:/app
     environment:
       - POSTGRES_HOST=auth_service_postgres
-      - KEYCLOAK_BASE_URL="keycloak:8080/auth"
+      - KEYCLOAK_BASE_URL=http://keycloak:8080/auth
       - POSTGRES_PORT=5432
       - QMS_CLIENT_SECRET=${QMS_CLIENT_SECRET}
       - QMS_ADMIN_USERNAME=${QMS_ADMIN_USERNAME}

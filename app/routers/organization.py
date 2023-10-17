@@ -19,6 +19,7 @@ async def register_org(org_details: OrgCreate, db: Session = Depends(utils.get_d
             name=org_details.name,
             parent_id=org_details.parent_id,
         )
+
         db.add(new_user)
         db.commit()
 
@@ -33,6 +34,7 @@ async def update_org_by_id(
 ):
     try:
         org = db.query(Organization).filter(Organization.id == org_id).first()
+
         if org is None:
             return {
                 "status": "FAILURE",
@@ -54,6 +56,7 @@ async def update_org_by_id(
 async def delete_org_by_id(org_id: int, db: Session = Depends(utils.get_db)):
     try:
         org = db.query(Organization).filter(Organization.id == org_id).first()
+
         if org is None:
             return {
                 "status": "FAILURE",

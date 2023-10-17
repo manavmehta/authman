@@ -1,8 +1,8 @@
-from os import environ
-
 """
     constants for the middleware
 """
+
+from os import environ
 
 KEYCLOAK_BASE_URL = environ.get("KEYCLOAK_BASE_URL", "http://localhost:18080/auth")
 POSTGRES_HOST = environ.get("POSTGRES_HOST", "localhost")
@@ -13,9 +13,13 @@ POSTGRES_PASSWORD = environ.get("POSTGRES_PASSWORD", "postgres")
 
 
 # Keycloak specific URLs
-REALM_URL = f"{KEYCLOAK_BASE_URL}/realms/{0}"
-REALM_USER_TOKEN_URL = f"{KEYCLOAK_BASE_URL}/realms/{0}/protocol/openid-connect/token"
-BRUTE_FORCE_USERS_URL = f"{KEYCLOAK_BASE_URL}/admin/realms/{0}/ui-ext/brute-force-user"
+REALM_URL = f"{KEYCLOAK_BASE_URL}/realms/" + "{0}"
+REALM_USER_TOKEN_URL = (
+    f"{KEYCLOAK_BASE_URL}/realms/" + "{0}/protocol/openid-connect/token"
+)
+BRUTE_FORCE_USERS_URL = (
+    f"{KEYCLOAK_BASE_URL}/admin/realms/" + "{0}/ui-ext/brute-force-user"
+)
 KEYCLOAK_USERS_URL = f"{KEYCLOAK_BASE_URL}/admin/realms/QMS/users"
 KEYCLOAK_AUTH_ADMIN = f"{KEYCLOAK_BASE_URL}/realms/QMS/protocol/openid-connect/token"
 
