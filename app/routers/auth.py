@@ -1,4 +1,5 @@
 from fastapi import APIRouter, Depends
+from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 from utils import utils
 from models.credentials import Credentials
@@ -6,7 +7,6 @@ from models.access import (
     UserOrgAccessResponseItem,
     UserOrgAccessResponse,
 )
-import jwt
 
 auth_router = APIRouter()
 
@@ -29,22 +29,16 @@ async def authenticate(credentials: Credentials):
 # async ?
 @auth_router.get("/access")
 async def get_authorization(
-    access_token: str = Depends(utils.oauth2_scheme),
+    access_token: str = Depends(utils.validate_jwt),
     db: Session = Depends(utils.get_db),
 ):
     try:
-        realm_public_key = utils.get_public_key_by_realm("QMS")
-
-        decoded_access_token = jwt.decode(
-            access_token, key=realm_public_key, algorithms=["RS256"], audience="account"
-        )
-
         access_reponse = await utils.get_organization_details_for_user(
-            decoded_access_token["preferred_username"], db
+            access_token["preferred_username"], db
         )
 
         return UserOrgAccessResponse(
-            kotak_username=decoded_access_token["preferred_username"],
+            kotak_username=access_token["preferred_username"],
             access=[
                 UserOrgAccessResponseItem(
                     path=organization_detail[0],
@@ -54,7 +48,7 @@ async def get_authorization(
                 for organization_detail in access_reponse
             ],
         )
-    except jwt.exceptions.ExpiredSignatureError:
-        return {"status": "FAILED", "message": "Token has expired"}
-    except Exception as e:
-        return {"status": "FAILED", "message": str(e)}
+    except HTTPException as exception:
+        return {"status": "FAILED", "message": str(exception)}
+    except Exception as exception:
+        return {"status": "FAILED", "message": str(exception)}
