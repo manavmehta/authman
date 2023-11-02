@@ -12,7 +12,7 @@ all: build pull tag push
 # Build services defined in your docker-compose file
 build:
 	@echo "Building the services defined in your docker-compose file"
-	@docker buildx build --platform linux/amd64 -t auth_service_backend:latest .
+	@docker buildx build --platform linux/amd64 -t auth_service_backend:latest . --load 
 	@echo "Done!"
 
 
