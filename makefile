@@ -12,14 +12,15 @@ all: build pull tag push
 # Build services defined in your docker-compose file
 build:
 	@echo "Building the services defined in your docker-compose file"
-	@docker-compose build
+	@docker buildx build --platform linux/amd64 -t auth_service_backend:latest .
 	@echo "Done!"
+
 
 # Pull public images
 pull:
 	@echo "Pulling public images"
-	@docker pull postgres:$(POSTGRES_VERSION)
-	@docker pull bitnami/keycloak:$(KEYCLOAK_SERVER_VERSION)
+	@docker pull --platform linux/amd64 postgres:$(POSTGRES_VERSION)
+	@docker pull --platform linux/amd64 bitnami/keycloak:$(KEYCLOAK_SERVER_VERSION)
 	@echo "Done!"
 
 # Tag images for ECR
@@ -34,7 +35,7 @@ tag:
 push:
 	@echo "Pushing images to ECR"
 	@$(eval export AWS_PROFILE=default)
-	@aws ecr get-login-password --profile treasure --region ap-south-1 --no-verify-ssl | docker login --username AWS --password-stdin $(ECR_URI)
+	@docker login -u AWS -p $$(aws ecr get-login-password --region ap-south-1 --profile hackathon --no-verify-ssl) $(ECR_URI)
 	@docker push $(ECR_URI)/postgres:$(POSTGRES_VERSION)
 	@docker push $(ECR_URI)/keycloak:$(KEYCLOAK_SERVER_VERSION)
 	@docker push $(ECR_URI)/authman-backend:latest
