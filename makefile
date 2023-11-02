@@ -20,6 +20,7 @@ build:
 pull:
 	@echo "Pulling public images"
 	@docker pull --platform linux/amd64 postgres:$(POSTGRES_VERSION)
+	@docker pull --platform linux/amd64 nginx:alpine
 	@docker pull --platform linux/amd64 bitnami/keycloak:$(KEYCLOAK_SERVER_VERSION)
 	@echo "Done!"
 
@@ -29,6 +30,7 @@ tag:
 	@docker tag postgres:$(POSTGRES_VERSION) $(ECR_URI)/postgres:$(POSTGRES_VERSION)
 	@docker tag bitnami/keycloak:$(KEYCLOAK_SERVER_VERSION) $(ECR_URI)/keycloak:$(KEYCLOAK_SERVER_VERSION)
 	@docker tag auth_service_backend:latest $(ECR_URI)/authman-backend:latest
+	@docker tag nginx:alpine $(ECR_URI)/nginx:alpine
 	@echo "Done!"
 
 # Push images to ECR
@@ -39,4 +41,5 @@ push:
 	@docker push $(ECR_URI)/postgres:$(POSTGRES_VERSION)
 	@docker push $(ECR_URI)/keycloak:$(KEYCLOAK_SERVER_VERSION)
 	@docker push $(ECR_URI)/authman-backend:latest
+	@docker push $(ECR_URI)/nginx:alpine
 	@echo "Done!"
