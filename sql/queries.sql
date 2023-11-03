@@ -33,35 +33,25 @@ CREATE TABLE user_org_access (
 
 ---------------
 
-INSERT INTO organization (name, path) VALUES ('Kotak', '/');
-
-INSERT INTO organization (name, parent_id, path) VALUES ('Risk', (SELECT id FROM organization WHERE name = 'Kotak'), '/Kotak/Risk');
-INSERT INTO organization (name, parent_id, path) VALUES ('Treasury', (SELECT id FROM organization WHERE name = 'Kotak'), '/Kotak/Treasury');
-INSERT INTO organization (name, parent_id, path) VALUES ('Market Risk', (SELECT id FROM organization WHERE name = 'Risk'), '/Kotak/Risk/MarketRisk');
-INSERT INTO organization (name, parent_id, path) VALUES ('Credit Risk', (SELECT id FROM organization WHERE name = 'Risk'), '/Kotak/Risk/CreditRisk');
-INSERT INTO organization (name, parent_id, path) VALUES ('Counterparty Risk', (SELECT id FROM organization WHERE name = 'Market Risk'), '/Kotak/Risk/MarketRisk/CounterpartyRisk');
-
-
-INSERT INTO users (name, email, kotak_username, contact_num, organization_id) VALUES ('Sougat', 'sougat@chakraborty.com', 'sougat', 1234567890, 1);
-INSERT INTO users (name, email, kotak_username, contact_num, organization_id) VALUES ('Mohit', 'mohit@beniwal.com', 'mohit', 9876543210, 2);
-INSERT INTO users (name, email, kotak_username, contact_num, organization_id) VALUES ('Manav', 'manav@mehta.com', 'manav', 1111111111, 2);
-INSERT INTO users (name, email, kotak_username, contact_num, organization_id) VALUES ('Piyush', 'piyush@sharma.com', 'piyush', 2222222222, 3);
-
-
-INSERT INTO user_org_access(user_id, organization_id, access_type) VALUES ((SELECT id FROM users WHERE name = 'Sougat'), (SELECT id FROM organization WHERE name = 'Risk'), 'W');
-INSERT INTO user_org_access(user_id, organization_id, access_type) VALUES ((SELECT id FROM users WHERE name = 'Sougat'), (SELECT id FROM organization WHERE name = 'Kotak'), 'R');
-INSERT INTO user_org_access(user_id, organization_id, access_type) VALUES ((SELECT id FROM users WHERE name = 'Mohit'), (SELECT id FROM organization WHERE name = 'Credit Risk'), 'W');
-INSERT INTO user_org_access(user_id, organization_id, access_type) VALUES ((SELECT id FROM users WHERE name = 'Manav'), (SELECT id FROM organization WHERE name = 'Market Risk'), 'W');
-INSERT INTO user_org_access(user_id, organization_id, access_type) VALUES ((SELECT id FROM users WHERE name = 'Mohit'), (SELECT id FROM organization WHERE name = 'Risk'), 'R');
-INSERT INTO user_org_access(user_id, organization_id, access_type) VALUES ((SELECT id FROM users WHERE name = 'Manav'), (SELECT id FROM organization WHERE name = 'Risk'), 'R');
-INSERT INTO user_org_access(user_id, organization_id, access_type) VALUES ((SELECT id FROM users WHERE name = 'Mohit'), (SELECT id FROM organization WHERE name = 'Treasury'), 'R');
-INSERT INTO user_org_access(user_id, organization_id, access_type) VALUES ((SELECT id FROM users WHERE name = 'Manav'), (SELECT id FROM organization WHERE name = 'Treasury'), 'R');
-
----------------
-
-SELECT * FROM organization;
-SELECT * FROM users;
-
 -- ALTER TABLE organization DROP CONSTRAINT organization_parent_id_fkey;
 
 -- ALTER TABLE organization ADD CONSTRAINT organization_parent_id_fkey FOREIGN KEY (parent_id) REFERENCES organization (id) ON DELETE CASCADE;
+
+CREATE OR REPLACE FUNCTION generate_organization_path() RETURNS TRIGGER AS $$
+BEGIN
+    IF NEW.parent_id = -1 THEN
+        NEW.path := NEW.name;
+    ELSE
+        NEW.path := (SELECT path FROM organization WHERE id = NEW.parent_id) || '/' || NEW.name;
+    END IF;
+
+    RETURN NEW;
+END;
+$$ LANGUAGE plpgsql;
+
+CREATE TRIGGER organization_generate_path
+BEFORE INSERT ON organization
+FOR EACH ROW
+EXECUTE FUNCTION generate_organization_path();
+
+-- SET log_statement = 'all';
