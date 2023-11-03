@@ -1,9 +1,11 @@
+from typing import List
 from fastapi import APIRouter, Depends
 from fastapi.exceptions import HTTPException
 from sqlalchemy.orm import Session
 from utils import utils
 from models.credentials import Credentials
 from models.access import (
+    UserOrgAccess,
     UserOrgAccessResponseItem,
     UserOrgAccessResponse,
 )
@@ -38,7 +40,7 @@ async def get_authorization(
         )
 
         return UserOrgAccessResponse(
-            kotak_username=access_token["preferred_username"],
+            kotak_username=access_token["preferred_username"].upper(),
             access=[
                 UserOrgAccessResponseItem(
                     path=organization_detail[0],
@@ -51,4 +53,21 @@ async def get_authorization(
     except HTTPException as exception:
         return {"status": "FAILED", "message": str(exception)}
     except Exception as exception:
+        return {"status": "FAILED", "message": str(exception)}
+
+
+# async ?
+@auth_router.post("/access")
+async def add_access(
+    access_details: List[UserOrgAccess],
+    db: Session = Depends(utils.get_db),
+):
+    try:
+        # Optimization needed
+        for access in access_details:
+            db.add(access)
+        db.commit()
+
+        return {"status": "SUCCESS", "status_code": 200}
+    except HTTPException as exception:
         return {"status": "FAILED", "message": str(exception)}

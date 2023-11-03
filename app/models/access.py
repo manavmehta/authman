@@ -1,23 +1,17 @@
 import datetime
 from typing import List
-from sqlalchemy import Column, Integer, ForeignKey, Enum
+from typing import Optional
+from sqlmodel import Field, SQLModel
 
-from db.connection import Base
-
-
-class UserOrgAccess(Base):
+class UserOrgAccess(SQLModel, table=True):
     __tablename__ = "user_org_access"
 
-    id = Column(Integer, primary_key=True)
-    user_id = Column(Integer, ForeignKey("users.id"), nullable=False)
-    organization_id = Column(Integer, ForeignKey("organization.id"), nullable=False)
-    access_type = Column(Enum("R", "W"), nullable=False)
-
-    created_at: datetime.datetime = Column()
-    updated_at: datetime.datetime = Column()
-
-    class Config:
-        orm_mode = True
+    id: Optional[int] = Field(default=None, primary_key=True)
+    user_id: int
+    organization_id: int
+    access_type: str
+    created_at: Optional[datetime.datetime] = Field(default=datetime.datetime.now())
+    updated_at: Optional[datetime.datetime] = Field(default=datetime.datetime.now())
 
 
 class UserOrgAccessResponseItem:

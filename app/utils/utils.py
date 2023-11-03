@@ -69,9 +69,9 @@ def get_public_key_by_realm(realm):
 
 async def get_organization_details_for_user(kotak_username: str, db: Session):
     query = select(Organization.path, Organization.name, UserOrgAccess.access_type)
-    query = query.join(UserOrgAccess, UserOrgAccess.id == Organization.id)
+    query = query.join(UserOrgAccess, UserOrgAccess.organization_id == Organization.id)
     query = query.join(Users, Users.id == UserOrgAccess.user_id)
-    query = query.where(Users.kotak_username == kotak_username)
+    query = query.where(Users.kotak_username == kotak_username.upper())
 
     return db.execute(query).all()
 
@@ -113,6 +113,7 @@ def get_authorization_token(realm_name, username, password):
 
         user_info = json.loads(user_token_response.text)
         user_access_token = user_info["access_token"]
+        print(user_access_token)
         return jwt.decode(
             user_access_token,
             key=realm_public_key,
