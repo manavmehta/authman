@@ -1,32 +1,16 @@
 import datetime
 from typing import Optional
-from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlmodel import Field, SQLModel
 
-from pydantic import BaseModel
-from db.connection import Base
-
-
-class Users(Base):
+class Users(SQLModel, table=True):
     __tablename__ = "users"
 
-    id: int = Column(Integer, primary_key=True)
-    name: str = Column(String(100), nullable=False)
-    email: str = Column(String(100), unique=True, nullable=False)
-    contact_num: int = Column(Integer, nullable=False)
-    kotak_username: str = Column(String, nullable=False)
-    supervisor_id: Optional[int] = Column(Integer, ForeignKey("users.id"))
-    organization_id: int = Column(Integer, ForeignKey("organization.id"))
-    created_at: datetime.datetime = Column(default=datetime.datetime.now())
-    updated_at: datetime.datetime = Column(default=datetime.datetime.now())
-
-    class Config:
-        orm_mode = True
-
-
-class UserCreate(BaseModel):
+    id: Optional[int] = Field(default=None, primary_key=True)
     name: str
     email: str
     contact_num: int
     kotak_username: str
-    supervisor_id: int
+    supervisor_id: Optional[int] = -1
     organization_id: int
+    created_at: Optional[datetime.datetime] = Field(default=datetime.datetime.now())
+    updated_at: Optional[datetime.datetime] = Field(default=datetime.datetime.now())

@@ -1,7 +1,7 @@
 
 CREATE TABLE organization (
     id SERIAL PRIMARY KEY,
-    parent_id SERIAL REFERENCES organization(id) ON DELETE CASCADE,
+    parent_id INTEGER,
     name VARCHAR(100) NOT NULL,
     path TEXT,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
@@ -14,7 +14,7 @@ CREATE TABLE users (
     email VARCHAR(100) NOT NULL UNIQUE,
     kotak_username VARCHAR(50) NOT NULL UNIQUE,
     contact_num BIGINT NOT NULL,
-    supervisor_id SERIAL REFERENCES users(id),
+    supervisor_id INTEGER,
     organization_id SERIAL NOT NULL REFERENCES organization(id),
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now()
@@ -24,8 +24,8 @@ CREATE TYPE access_ENUM AS ENUM('R', 'W');
 
 CREATE TABLE user_org_access (
     id SERIAL PRIMARY KEY,
-    user_id SERIAL REFERENCES users(id),
-    organization_id SERIAL REFERENCES organization(id),
+    user_id INTEGER,
+    organization_id INTEGER,
     created_at TIMESTAMP NOT NULL DEFAULT now(),
     updated_at TIMESTAMP NOT NULL DEFAULT now(),
     access_type access_ENUM NOT NULL

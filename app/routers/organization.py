@@ -7,20 +7,22 @@ organization_router = APIRouter()
 
 
 # async ?
+@organization_router.get("/")
+async def get_all_organizations(db: Session = Depends(utils.get_db)):
+    return db.query(Organization).all()
+
+
+# async ?
 @organization_router.get("/{org_id}")
 async def get_organization(org_id: int, db: Session = Depends(utils.get_db)):
     return db.query(Organization).filter(Organization.id == org_id).first()
 
 
 @organization_router.post("/")
-async def register_org(org_details: OrgCreate, db: Session = Depends(utils.get_db)):
+async def register_org(org_details: Organization, db: Session = Depends(utils.get_db)):
     try:
-        new_user = Organization(
-            name=org_details.name,
-            parent_id=org_details.parent_id,
-        )
-
-        db.add(new_user)
+        
+        db.add(org_details)
         db.commit()
 
         return {"status": "SUCCESS", "status_code": 200}
