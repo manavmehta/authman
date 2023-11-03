@@ -21,7 +21,6 @@ async def get_organization(org_id: int, db: Session = Depends(utils.get_db)):
 @organization_router.post("/")
 async def register_org(org_details: Organization, db: Session = Depends(utils.get_db)):
     try:
-        
         db.add(org_details)
         db.commit()
 

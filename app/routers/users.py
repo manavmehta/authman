@@ -37,7 +37,6 @@ async def register_user(user_details: Users, db: Session = Depends(utils.get_db)
         return response
 
     try:
-
         db.add(user_details)
         db.commit()
 
