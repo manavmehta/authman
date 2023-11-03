@@ -89,9 +89,9 @@ services:
     volumes:
       - .:/app
     environment:
-      - POSTGRES_HOST=3.7.237.148
-      - KEYCLOAK_BASE_URL=http://3.7.237.148:18080/auth
-      - POSTGRES_PORT=54322
+      - POSTGRES_HOST=auth_service_postgres
+      - KEYCLOAK_BASE_URL=http://keycloak:8080/auth
+      - POSTGRES_PORT=5432
       - QMS_CLIENT_SECRET=${QMS_CLIENT_SECRET}
       - QMS_ADMIN_USERNAME=${QMS_ADMIN_USERNAME}
       - QMS_ADMIN_PASSWORD=${QMS_ADMIN_PASSWORD}
