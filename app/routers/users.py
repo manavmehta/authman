@@ -19,22 +19,27 @@ async def get_allusers(db: Session = Depends(utils.get_db)):
 async def get_user_by_userid(user_id: int, db: Session = Depends(utils.get_db)):
     return db.query(Users).filter(Users.id == user_id).first()
 
+# async ?
+@users_router.get("/get-by-email/{email}")
+async def get_user_by_email(email: str, db: Session = Depends(utils.get_db)):
+    return db.query(Users).filter(Users.email == email).first()
+
 
 @users_router.post("/")
 async def register_user(user_details: Users, db: Session = Depends(utils.get_db)):
-    split_name = user_details.name.split(" ")
-    new_user = KCUser(
-        username=user_details.kotak_username,
-        email=user_details.email,
-        firstName=split_name[0],
-        lastName=" ".join(split_name[1:]),
-    )
+    # split_name = user_details.name.split(" ")
+    # new_user = KCUser(
+    #     username=user_details.kotak_username,
+    #     email=user_details.email,
+    #     firstName=split_name[0],
+    #     lastName=" ".join(split_name[1:]),
+    # )
 
-    response = keycloak_utils.add_user_to_keycloak(new_user)
+    # response = keycloak_utils.add_user_to_keycloak(new_user)
 
-    # 201 was being returned from KC, figure out a better way to handle this
-    if response["status_code"] >= 300:
-        return response
+    # # 201 was being returned from KC, figure out a better way to handle this
+    # if response["status_code"] >= 300:
+    #     return response
 
     try:
         db.add(user_details)
